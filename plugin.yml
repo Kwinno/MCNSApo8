@@ -1,0 +1,95 @@
+name: MCNSApo8
+main: com.mcnsa.po8.po8
+author: fuzzywuzzie, mabougey, fusty, Octavian0, Kwinno
+version: 1.1
+softdepend: [Permissions]
+ 
+commands:
+    ptransfer:
+        description: Transfers po8 currency to another player
+        usage: /ptransfer [player] [amount]
+    pbalance:
+        description: Shows your current balance
+        usage: /pbalance  for admins /pbalance [player]
+    po8:
+      description: Lists all commands
+      usage: /po8
+    shop:
+      description: Shop the po8 store
+      usage: fill in more here
+    po8admin:
+      description: Po8 admin menu
+      usage: fill in more here, will display menu only to admins
+    padmin:
+      description: alias of /po8admin
+      usage: fill in more here, will display menu only to admins
+    shopkeeps:
+      description: Displays a list of online and offline shopkeepers
+      usage: /shopkeeps
+    setxp:
+      description: sets the xp of the player to a specific level
+      usage: /setxp [player] [integer]  Levels must be less than 3000
+    getxp:
+      description: checks the xp level of the player
+      usage: /getxp [player]
+    paccount:
+      description: For in-game account creation and password changing
+      usage: /paccount and fill in more here as per /po8 command list
+    psell:
+      description: Peer to Peer selling system
+      usage: /psell <player> <itemId> <price> <quantity>
+    paccept:
+      description: Accepts a peer to peer transaction
+      usage: /paccept
+    preject:
+      description: Reject a peer to peer transaction
+      usage: /reject
+    ptoggle:
+      description: Toggle if you display in the /shopkeeps list
+      usage: /ptoggle <on/off>
+    phelp:
+      description: Show the Po8 help menu
+      usage: /phelp [optional page number]
+    shopreq:
+      description: Check or submit Shop Requests much like modreqs
+      usage:  /shopreq <start typing request here>
+    close:
+      description: Close a shopreq with the given id number
+      usage: /close <idNum>
+    psearch:
+      description: Searches for items using World Edit
+      usage: /psearch <enter a string here, spaces allowed>
+    telelist:
+      description: Lists all defined teleport locations.
+      aliases: [tclist,listtc]
+    teleto:
+      description: Warps the player to a teleport location.
+      aliases: tc
+    teleadd:
+      description: Adds a teleport definition to tele.txt.
+      aliases: ts
+    teleremove:
+      decription: Removes a defined teleport location from tele.txt.
+      aliases: tr
+    po8collect:
+      decription: Help for po8collect.
+      aliases: po8collect
+    Sublist:
+      description: Lists subscribed players
+      aliases: sublist
+    Checkpot:
+      description: Tells the sender total pot value
+      aliases: cp
+    Unsublottery:
+      description: Unsubscribes the player from the lottery
+      aliases: unsub
+    Sublottery:
+      decription: Adds a player to the lottery
+      aliases: sub
+    Runlottery:
+      decription: Runs the Lottery
+      aliases: run
+    po8lottery:
+      description: Displays Po8 Lottery help
+    dicks:
+      description: For dicksdicksdicks

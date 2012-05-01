@@ -1,0 +1,12 @@
+# po8 1.0 plugin
+# by slothario
+# eeemail@gmail.com
+
+# This is the default config.yml file.
+
+#insert key and URL here
+api_key: 99ee8356fb47c269cd3ee39fa3f1c09d
+api_url: http://po8.thehazz.net/api/api.php
+  
+# "Thank you for banking with <organization_name>!"
+organization_name: us
