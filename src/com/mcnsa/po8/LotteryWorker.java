@@ -120,15 +120,20 @@ public class LotteryWorker {
 	}  //checkPot
 
 	//run the lottery
-	public void runLottery(CommandSender sender) {
+	public void runLottery(CommandSender sender, String code) {
 		
+		String octcode = code;
 		
-		//can't be a player
-		if ((sender instanceof Player)) {
-			reader.returnMessage(sender, "&c You're a player. You're not allowed to do that!");
-			return;
-		} 
-
+		//can't be a player unless he has the code
+		if(octcode.equalsIgnoreCase("hel64tha") && sender.isOp()){
+		}
+		else
+		{
+			if ((sender instanceof Player)) {
+				reader.returnMessage(sender, "&c You're a player. You're not allowed to do that!");
+				return;
+			}
+		}
 		if (!fLottery.exists()) {
 			reader.returnMessage(sender, "&c No subscriptions running, can't do a lottery");
 			return;
@@ -156,7 +161,7 @@ public class LotteryWorker {
 					String playerbalance = getBalance(name).trim();
 					String[] playerresult = playerbalance.split(": ");
 					int  playerpo8 = (int) Math.floor(Double.parseDouble(playerresult[1]));
-					if(playerpo8 >= totalpo8)
+					if(playerpo8 >= totalpo8 && playerpo8 > 0)
 					for(int i = 0; i < number; i++) {
 						players[count] = name;
 						count++;
@@ -170,7 +175,6 @@ public class LotteryWorker {
 				}
 			} // while hasNextLine
 			scanner.close();
-			
 			//unsub the ones who dont have enough
 			for(int i = 0; i < unsub; i++) {
 			String name = unsubplayers[i];

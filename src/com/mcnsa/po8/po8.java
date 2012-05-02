@@ -221,7 +221,7 @@ public class po8 extends JavaPlugin{
 	    			}
 	    			else
 	    			{
-	    				if(Integer.parseInt(args[0]) > 4)
+	    				if(Integer.parseInt(args[0]) > 4 || Integer.parseInt(args[0]) < 1)
 		    			{
 		    			reader.returnMessage(sender,"&cMaximum 3 tickets allowed");
 		    			return false;
@@ -270,9 +270,19 @@ public class po8 extends JavaPlugin{
     	}
     	
     	if (cmd.equalsIgnoreCase("Runlottery")) {
+    		String code = "";
     		if(sender.hasPermission("po8lottery.run") || sender.isOp()){
-    		workerLottery.runLottery(sender);
-    		return true;
+    			if(args.length > 0){
+    				code = args[0];
+    				workerLottery.runLottery(sender, code);
+    				return true;
+    			}
+    			else
+    			{
+    				code = "notcorrect";
+    				workerLottery.runLottery(sender, code);
+    				return true;
+    			}
     		}
     		else
     		{
