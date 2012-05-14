@@ -16,6 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -33,10 +34,14 @@ public class po8 extends JavaPlugin{
     private static final Logger log = Logger.getLogger("Minecraft");
     static String apiUrl;
     static String apiKey;
+    static String accountname;
+    static String maxtickets;
     private FileConfiguration customConfig = null;
     private File customConfigFile = null;
     private Po8collectWorker workerPo8collect;
     private LotteryWorker workerLottery;
+    private Po8ShopWorker workerPo8Shop;
+    private SlotMachineWorker workerSlot;
     private Server server = Bukkit.getServer();
     static String dir = new String("plugins/MCNSApo8");
     static File newdir = new File(dir);
@@ -54,6 +59,8 @@ public class po8 extends JavaPlugin{
         //Client client = new Client("localhost",0,log);
         apiUrl = getCustomConfig().getString("api_url");
         apiKey = getCustomConfig().getString("api_key");
+        accountname = getCustomConfig().getString("lottery_account");
+        maxtickets = getCustomConfig().getString("maxtickets").trim();
         reader = new JavaHttpUrlConnectionReader();
         String testStr = apiUrl + "?key="+apiKey;
         String result  = reader.loadURL(testStr);
@@ -69,10 +76,17 @@ public class po8 extends JavaPlugin{
         //Check for po8transactions.dat and po8shopreqs.dat
         File po8trans;
         File po8shopreqs;
+        File po8lottery;
+        File po8shop;
+        File slotMachine;
+        
         po8trans = new File(dir + "/po8transactions.dat");
         po8shopreqs = new File(dir + "/po8shopreqs.dat");
-        
-        
+        po8lottery = new File(dir + "/Lottery.txt");
+        po8shop = new File(dir + "/Shop.txt");
+        slotMachine = new File(dir + "/Slots.txt");
+
+    	
         if(!po8trans.exists()){
         	try {
         		newdir.mkdirs();
@@ -99,8 +113,38 @@ public class po8 extends JavaPlugin{
 			} catch (IOException e) {
 			}
         }
+        if(!po8lottery.exists()){
+        	try {
+        		
+        		newdir.mkdirs();
+        		po8lottery.createNewFile();
+        		
+			} catch (IOException e) {
+			}
+        }
+        if(!slotMachine.exists()){
+        	try {
+        		
+        		newdir.mkdirs();
+        		slotMachine.createNewFile();
+        		
+			} catch (IOException e) {
+			}
+        }
+        if(!po8shop.exists()){
+        	try {
+        		
+        		newdir.mkdirs();
+        		po8shop.createNewFile();
+        		
+			} catch (IOException e) {
+			}
+        }
         workerPo8collect = new Po8collectWorker(newdir);
         workerLottery = new LotteryWorker(newdir);
+        workerPo8Shop = new Po8ShopWorker(newdir);
+        workerSlot = new SlotMachineWorker(newdir);
+        
         
     }
     
@@ -119,9 +163,119 @@ public class po8 extends JavaPlugin{
     public boolean onCommand(CommandSender sender, Command command, String label,
     String[] args){
     String cmd = command.getName();
-    	//Po8Collect commands
+    //slot commands
+	if (cmd.equalsIgnoreCase("po8slot")) {
+		workerSlot.po8slot(sender);
+		return true;
+	}
+	
+	if (cmd.equalsIgnoreCase("checkcoins")) {
+		if(sender.hasPermission("slots.checkcoins") || sender.isOp()){
+		workerSlot.checkcoins(sender);
+		return true;
+		}
+		else
+		{
+			message(sender);
+			return false;
+		}
+	}
+	if (cmd.equalsIgnoreCase("play")) {
+		if(sender.hasPermission("slots.play") || sender.isOp()){
+			if(args.length > 0 && isInteger(args[0])){
+					if((Integer.parseInt(args[0]) <= 10)){
+					workerSlot.playgame(sender, args[0]);
+					return true;
+					}
+					else
+					{
+						reader.returnMessage(sender,"&cPlease enter a number between 1 and 10");
+						return false;
+					}
+			}
+			else
+			{
+				reader.returnMessage(sender,"&cPlease enter a valid number");
+				return false;
+			}
+		}
+		else
+		{
+			message(sender);
+			return false;
+		}
+	}
+	if (cmd.equalsIgnoreCase("buycoins")) {
+		if(sender.hasPermission("slots.buy") || sender.isOp()){
+			if(args.length > 0 && isInteger(args[0])){
+					workerSlot.buyCoins(sender, args[0]);
+					return true;
+			}
+			else
+			{
+				reader.returnMessage(sender,"&cPlease enter a valid number");	
+				return false;
+			}
+		}
+		else
+		{
+			message(sender);
+			return false;
+		}
+	}
+	if (cmd.equalsIgnoreCase("checkout")) {
+		if(sender.hasPermission("slots.checkout") || sender.isOp()){
+		workerSlot.checkout(sender);
+		return true;
+		}
+		else
+		{
+			message(sender);
+			return false;
+		}
+	}
+	
+    	//Po8shop commands
+	if (cmd.equalsIgnoreCase("po8shop")) {
+		workerPo8Shop.shopTelehelp(sender);
+		return true;
+	}
+	if (cmd.equalsIgnoreCase("shopteleadd")) {
+		if(sender.hasPermission("po8shop.add") || sender.isOp()){
+			workerPo8Shop.shopTeleAdd(sender, args[0]);
+			return true;
+		}
+		else
+		{
+			message(sender);
+			return false;
+		}
+	}
+	if (cmd.equalsIgnoreCase("shopteleto")) {
+		if(sender.hasPermission("po8shop.teleport") || sender.isOp()){
+			workerPo8Shop.shopTeleTo(sender, args[0]);
+			return true;
+		}
+		else
+		{
+			message(sender);
+			return false;
+		}
+	}
+	if (cmd.equalsIgnoreCase("shopteleremove")) {
+		if(sender.hasPermission("po8shop.remove") || sender.isOp()){
+			workerPo8Shop.shopTeleRemove(sender, args[0]);
+			return true;
+		}
+		else
+		{
+			message(sender);
+			return false;
+		}
+	}
+	//po8Collect Commands
     	if (cmd.equalsIgnoreCase("dicks")) {
-    		String judge = "JudgeAnderson is the sexiest Templar!";
+    		String judge = "JudgeAnderson is the sexiest Templar";
     		String name = sender.getName();
     		server.getPlayer(name).chat(judge);
     		return true;
@@ -176,7 +330,7 @@ public class po8 extends JavaPlugin{
     	    		}
     	    		else
     	    		{
-    	    			sender.sendMessage("&cThis teleports exists. Use \"-o\" to override");
+    	    			reader.returnMessage(sender,"&cThis teleports exists. Use \"-o\" to override");
     	    			return false;
     	    		}
     		}
@@ -221,9 +375,9 @@ public class po8 extends JavaPlugin{
 	    			}
 	    			else
 	    			{
-	    				if(Integer.parseInt(args[0]) > 4 || Integer.parseInt(args[0]) < 1)
+	    				if(Integer.parseInt(args[0]) > Integer.parseInt(maxtickets) || Integer.parseInt(args[0]) < 1)
 		    			{
-		    			reader.returnMessage(sender,"&cMaximum 3 tickets allowed");
+		    			reader.returnMessage(sender,"&cMaximum " + maxtickets + " tickets allowed, minimum 1");
 		    			return false;
 		    			}
 	    			}
@@ -232,7 +386,42 @@ public class po8 extends JavaPlugin{
 		    		return true;
 	    		}
 	    		else{
-	    		workerLottery.sublottery(sender, "1");
+	    			workerLottery.showtickets(sender);
+	    		return true;
+	    		}
+    		}
+    		else
+    		{
+    			message(sender);
+    			return false;
+    		}	
+    	}
+    	
+    	if (cmd.equalsIgnoreCase("Ticket")) {
+    		if(sender.hasPermission("po8lottery.ticket") || sender.isOp()){
+
+    			
+	    		if(args.length > 0){
+	    			if(!isInteger(args[0]))
+	    			{
+	    			reader.returnMessage(sender,"&cPlease submit a number");
+	    			return false;
+	    			}
+	    			else
+	    			{
+	    				if(Integer.parseInt(args[0]) > Integer.parseInt(maxtickets) || Integer.parseInt(args[0]) < 1)
+		    			{
+		    			reader.returnMessage(sender,"&cMaximum " + maxtickets + " tickets allowed, minimum 1");
+		    			return false;
+		    			}
+	    				else{
+	    		    		workerLottery.ticketlottery(sender, args[0]);
+	    		    		return true;
+	    				}
+	    			} 			
+	    		}
+	    		else{
+	    			workerLottery.showtickets(sender);
 	    		return true;
 	    		}
     		}
@@ -246,6 +435,20 @@ public class po8 extends JavaPlugin{
     	if (cmd.equalsIgnoreCase("Sublist")) {
     		if(sender.hasPermission("po8lottery.list") || sender.isOp()){
     		workerLottery.subList(sender);
+    		return true;
+    		}
+    		else
+    		{
+    			message(sender);
+    			return false;
+    		}
+    		
+    	}
+    	
+    	if (cmd.equalsIgnoreCase("Lottery")) {
+    		if(sender.hasPermission("po8lottery.check") || sender.isOp()){
+    			workerLottery.checkPot(sender);
+    			workerLottery.showtickets(sender);
     		return true;
     		}
     		else
